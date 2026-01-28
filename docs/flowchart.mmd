@@ -1,0 +1,27 @@
+graph TD
+    %% Roles
+    Start((Mulai)) --> Login[Halaman Login]
+    Login --> Auth{Autentikasi}
+    Auth -- Gagal --> Login
+    Auth -- Berhasil --> RoleCheck{Cek Role?}
+
+    %% Admin Flow
+    RoleCheck -- ADMIN --> AdminDash[Admin Dashboard]
+    AdminDash --> ManageData[Kelola Data Master<br/>Kelas, Semester, MK, Kategori]
+    AdminDash --> ManageStudents[Kelola Akun Mahasiswa]
+    AdminDash --> ManageAssign[Kelola Tugas]
+    
+    ManageAssign --> CreateAssign[Buat/Edit Tugas]
+    CreateAssign --> AddQuestions[Input Soal & Opsi Jawaban]
+    AddQuestions --> Publish{Publish?}
+    Publish -- Ya --> Published[Tugas Tersedia untuk Mahasiswa]
+    
+    AdminDash --> ViewReports[Lihat Laporan & Submisi]
+
+    %% Student Flow
+    RoleCheck -- STUDENT --> StudentDash[Student Dashboard]
+    StudentDash --> ViewAssign[Lihat Daftar Tugas Tersedia]
+    ViewAssign --> WorkAssign[Workspace Pengerjaan Tugas]
+    WorkAssign --> Submit[Submit Jawaban]
+    Submit --> CalcScore[Kalkulasi Nilai Otomatis]
+    CalcScore --> Finish((Selesai))

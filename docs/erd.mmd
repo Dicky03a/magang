@@ -1,0 +1,96 @@
+erDiagram
+    PROFIL ||--o{ SUBMISI : "melakukan"
+    PROFIL }|--|| KELAS : "termasuk"
+    PROFIL }|--|| SEMESTER : "terdaftar di"
+    
+    KELAS ||--o{ TUGAS : "ditugaskan ke"
+    SEMESTER ||--o{ TUGAS : "aktif di"
+    MATA_KULIAH ||--o{ TUGAS : "terkait dengan"
+    KATEGORI_TUGAS ||--o{ TUGAS : "dikategorikan sebagai"
+    
+    TUGAS ||--o{ PERTANYAAN : "berisi"
+    TUGAS ||--o{ SUBMISI : "memiliki"
+    
+    PERTANYAAN ||--o{ OPSI_JAWABAN : "memiliki"
+    PERTANYAAN ||--o{ JAWABAN_MAHASISWA : "dijawab dalam"
+    
+    SUBMISI ||--o{ JAWABAN_MAHASISWA : "terdiri dari"
+    
+    JAWABAN_MAHASISWA }|--|| OPSI_JAWABAN : "memilih"
+
+    PROFIL {
+        uuid id PK
+        string email
+        string nama_lengkap
+        string nim
+        string peran "MAHASISWA/ADMIN"
+        uuid id_kelas FK
+        uuid id_semester FK
+        string url_avatar
+    }
+
+    KELAS {
+        uuid id PK
+        string nama
+    }
+
+    SEMESTER {
+        uuid id PK
+        string nama
+        boolean apakah_aktif
+    }
+
+    MATA_KULIAH {
+        uuid id PK
+        string kode
+        string nama
+    }
+
+    KATEGORI_TUGAS {
+        uuid id PK
+        string nama
+    }
+
+    TUGAS {
+        uuid id PK
+        string judul
+        text deskripsi
+        uuid id_kategori FK
+        uuid id_mata_kuliah FK
+        uuid id_semester FK
+        uuid id_kelas FK
+        timestamp tenggat_waktu
+        int jumlah_pertanyaan
+        boolean apakah_diterbitkan
+        timestamp dibuat_pada
+    }
+
+    PERTANYAAN {
+        uuid id PK
+        uuid id_tugas FK
+        text teks_pertanyaan
+        uuid id_opsi_benar FK
+        timestamp dibuat_pada
+    }
+
+    OPSI_JAWABAN {
+        uuid id PK
+        uuid id_pertanyaan FK
+        text teks_opsi
+        boolean apakah_benar
+    }
+
+    SUBMISI {
+        uuid id PK
+        uuid id_tugas FK
+        uuid id_mahasiswa FK
+        int nilai
+        timestamp dikirim_pada
+    }
+
+    JAWABAN_MAHASISWA {
+        uuid id PK
+        uuid id_submisi FK
+        uuid id_pertanyaan FK
+        uuid id_opsi_terpilih FK
+    }

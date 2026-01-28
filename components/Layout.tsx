@@ -1,20 +1,19 @@
-
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { Profile } from '../types';
-import { 
-  LayoutDashboard, 
-  BookOpen, 
-  Users, 
-  FileText, 
-  Settings, 
-  LogOut, 
-  Menu, 
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import { Profile } from "../types";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Users,
+  FileText,
+  Settings,
+  LogOut,
+  Menu,
   X,
   GraduationCap,
-  BarChart3
-} from 'lucide-react';
+  BarChart3,
+} from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -28,22 +27,22 @@ const Layout: React.FC<LayoutProps> = ({ children, profile }) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/login');
+    navigate("/");
   };
 
   const adminLinks = [
-    { name: 'Ringkasan', path: '/admin', icon: LayoutDashboard },
-    { name: 'Data Master', path: '/admin/data', icon: Settings },
-    { name: 'Tugas & Kuis', path: '/admin/assignments', icon: FileText },
-    { name: 'Laporan Nilai', path: '/admin/reports', icon: BarChart3 },
-    { name: 'Mahasiswa', path: '/admin/students', icon: Users },
+    { name: "Ringkasan", path: "/admin", icon: LayoutDashboard },
+    { name: "Data Master", path: "/admin/data", icon: Settings },
+    { name: "Tugas & Kuis", path: "/admin/assignments", icon: FileText },
+    { name: "Laporan Nilai", path: "/admin/reports", icon: BarChart3 },
+    { name: "Mahasiswa", path: "/admin/students", icon: Users },
   ];
 
   const studentLinks = [
-    { name: 'Dashboard', path: '/student', icon: LayoutDashboard },
+    { name: "Dashboard", path: "/student", icon: LayoutDashboard },
   ];
 
-  const links = profile.role === 'ADMIN' ? adminLinks : studentLinks;
+  const links = profile.role === "ADMIN" ? adminLinks : studentLinks;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
@@ -53,22 +52,29 @@ const Layout: React.FC<LayoutProps> = ({ children, profile }) => {
           <GraduationCap size={24} />
           <span className="font-bold tracking-tight">EduTask</span>
         </div>
-        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-1">
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="p-1"
+        >
           {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Sidebar */}
-      <aside className={`
-        fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+      <aside
+        className={`
+        fixed inset-y-0 left-0 transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
         md:relative md:translate-x-0 transition-transform duration-300 ease-in-out
         w-72 bg-white border-r border-slate-200 z-40 flex flex-col shadow-xl md:shadow-none
-      `}>
+      `}
+      >
         <div className="hidden md:flex p-8 border-b border-slate-50 items-center space-x-3">
           <div className="bg-blue-600 p-2 rounded-xl text-white shadow-lg shadow-blue-200">
             <GraduationCap size={28} />
           </div>
-          <span className="font-black text-2xl tracking-tight text-slate-900 italic">EduTask.</span>
+          <span className="font-black text-2xl tracking-tight text-slate-900 italic">
+            EduTask.
+          </span>
         </div>
 
         <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
@@ -82,9 +88,11 @@ const Layout: React.FC<LayoutProps> = ({ children, profile }) => {
                 onClick={() => setIsSidebarOpen(false)}
                 className={`
                   flex items-center space-x-3 p-3.5 rounded-xl transition-all duration-200
-                  ${isActive 
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-100 font-bold translate-x-1' 
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'}
+                  ${
+                    isActive
+                      ? "bg-blue-600 text-white shadow-lg shadow-blue-100 font-bold translate-x-1"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                  }
                 `}
               >
                 <Icon size={20} />
@@ -100,11 +108,15 @@ const Layout: React.FC<LayoutProps> = ({ children, profile }) => {
               {profile.full_name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-slate-900 truncate">{profile.full_name}</p>
-              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">{profile.role}</p>
+              <p className="text-sm font-bold text-slate-900 truncate">
+                {profile.full_name}
+              </p>
+              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">
+                {profile.role}
+              </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center space-x-2 p-3 text-red-500 hover:bg-red-50 rounded-xl transition-all font-bold text-sm"
           >
