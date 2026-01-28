@@ -1,18 +1,25 @@
-
-export type Role = 'ADMIN' | 'STUDENT';
+// types.ts - Type definitions for the student management system
 
 export interface Profile {
   id: string;
   email: string;
   full_name: string;
-  role: Role;
-  class_id?: string;
-  semester_id?: string;
-  class?: { name: string };
-  semester?: { name: string };
+  nim?: string;
+  role: "STUDENT" | "ADMIN";
+  class_id?: string | null;
+  semester_id?: string | null;
+  avatar_url?: string | null;
+  class?: {
+    id: string;
+    name: string;
+  };
+  semester?: {
+    id: string;
+    name: string;
+  };
 }
 
-export interface TaskCategory {
+export interface Class {
   id: string;
   name: string;
 }
@@ -29,7 +36,7 @@ export interface Course {
   name: string;
 }
 
-export interface Class {
+export interface TaskCategory {
   id: string;
   name: string;
 }
@@ -37,7 +44,7 @@ export interface Class {
 export interface Assignment {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   category_id: string;
   course_id: string;
   semester_id: string;
@@ -46,10 +53,21 @@ export interface Assignment {
   question_count: number;
   is_published: boolean;
   created_at: string;
-  category?: TaskCategory;
-  course?: Course;
-  semester?: Semester;
-  class?: Class;
+}
+
+export interface Question {
+  id: string;
+  assignment_id: string;
+  question_text: string;
+  correct_option_id?: string;
+  created_at: string;
+}
+
+export interface AnswerOption {
+  id: string;
+  question_id: string;
+  option_text: string;
+  is_correct: boolean;
 }
 
 export interface Submission {
@@ -58,19 +76,11 @@ export interface Submission {
   student_id: string;
   score: number;
   submitted_at: string;
-  student?: Profile;
-  assignment?: Assignment;
 }
 
-export interface Question {
+export interface StudentAnswer {
   id: string;
-  assignment_id: string;
-  question_text: string;
-  correct_option_id?: string; // Optional because we don't send this to client anymore
-}
-
-export interface AnswerOption {
-  id: string;
+  submission_id: string;
   question_id: string;
-  option_text: string;
+  selected_option_id: string;
 }

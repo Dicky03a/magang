@@ -6,11 +6,24 @@ import {
   Mail,
   User,
   GraduationCap,
-  ArrowRight,
   BookOpen,
   Calendar,
   Save,
+  Plus,
+  Edit2,
+  Trash2,
+  X,
 } from "lucide-react";
+
+interface StudentFormData {
+  email: string;
+  full_name: string;
+  nim: string;
+  role: "STUDENT" | "ADMIN";
+  class_id: string;
+  semester_id: string;
+  password?: string;
+}
 
 const AdminStudents: React.FC = () => {
   const [students, setStudents] = useState<Profile[]>([]);
@@ -18,10 +31,26 @@ const AdminStudents: React.FC = () => {
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [updatingStudent, setUpdatingStudent] = useState<string | null>(null); // Track which student is being updated
+  const [updatingStudent, setUpdatingStudent] = useState<string | null>(null);
   const [studentUpdates, setStudentUpdates] = useState<
     Record<string, { class_id: string | null; semester_id: string | null }>
   >({});
+
+  // Modal states
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Profile | null>(null);
+  const [formData, setFormData] = useState<StudentFormData>({
+    email: "",
+    full_name: "",
+    nim: "",
+    role: "STUDENT",
+    class_id: "",
+    semester_id: "",
+    password: "",
+  });
+  const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -44,7 +73,6 @@ const AdminStudents: React.FC = () => {
     setLoading(false);
   };
 
-  // Initialize student updates when students load
   useEffect(() => {
     const initialUpdates: Record<
       string,
@@ -97,7 +125,6 @@ const AdminStudents: React.FC = () => {
       console.error("Error updating student:", error);
       alert(`Gagal memperbarui data mahasiswa: ${error.message}`);
     } else {
-      // Update the local student record to reflect the change
       setStudents((prev) =>
         prev.map((std) =>
           std.id === studentId
@@ -114,22 +141,177 @@ const AdminStudents: React.FC = () => {
     setUpdatingStudent(null);
   };
 
-  // Filter students based on search term
+  // Add new student
+  const handleAddStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormLoading(true);
+
+    try {
+      // 1. Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password || "defaultPassword123",
+        options: {
+          data: {
+            full_name: formData.full_name,
+          },
+        },
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // 2. Update profile with additional data
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .update({
+            full_name: formData.full_name,
+            nim: formData.nim,
+            role: formData.role,
+            class_id: formData.class_id || null,
+            semester_id: formData.semester_id || null,
+          })
+          .eq("id", authData.user.id);
+
+        if (profileError) throw profileError;
+
+        alert("Mahasiswa berhasil ditambahkan!");
+        setShowAddModal(false);
+        resetForm();
+        fetchData();
+      }
+    } catch (error: any) {
+      console.error("Error adding student:", error);
+      alert(`Gagal menambahkan mahasiswa: ${error.message}`);
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  // Edit student
+  const handleEditStudent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudent) return;
+
+    setFormLoading(true);
+
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: formData.full_name,
+          nim: formData.nim,
+          role: formData.role,
+          class_id: formData.class_id || null,
+          semester_id: formData.semester_id || null,
+        })
+        .eq("id", selectedStudent.id);
+
+      if (error) throw error;
+
+      alert("Data mahasiswa berhasil diperbarui!");
+      setShowEditModal(false);
+      setSelectedStudent(null);
+      resetForm();
+      fetchData();
+    } catch (error: any) {
+      console.error("Error updating student:", error);
+      alert(`Gagal memperbarui mahasiswa: ${error.message}`);
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  // Delete student
+  const handleDeleteStudent = async () => {
+    if (!selectedStudent) return;
+
+    setFormLoading(true);
+
+    try {
+      // Note: Deleting from profiles will cascade if foreign keys are set up correctly
+      // You may need to delete from auth.users as well (requires admin privileges)
+      const { error } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", selectedStudent.id);
+
+      if (error) throw error;
+
+      alert("Mahasiswa berhasil dihapus!");
+      setShowDeleteModal(false);
+      setSelectedStudent(null);
+      fetchData();
+    } catch (error: any) {
+      console.error("Error deleting student:", error);
+      alert(`Gagal menghapus mahasiswa: ${error.message}`);
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    setShowAddModal(true);
+  };
+
+  const openEditModal = (student: Profile) => {
+    setSelectedStudent(student);
+    setFormData({
+      email: student.email,
+      full_name: student.full_name,
+      nim: student.nim || "",
+      role: student.role as "STUDENT" | "ADMIN",
+      class_id: student.class_id || "",
+      semester_id: student.semester_id || "",
+    });
+    setShowEditModal(true);
+  };
+
+  const openDeleteModal = (student: Profile) => {
+    setSelectedStudent(student);
+    setShowDeleteModal(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      email: "",
+      full_name: "",
+      nim: "",
+      role: "STUDENT",
+      class_id: "",
+      semester_id: "",
+      password: "",
+    });
+  };
+
   const filteredStudents = students.filter(
     (student) =>
       student.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase()),
+      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (student.nim &&
+        student.nim.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">
-          Manajemen Mahasiswa
-        </h1>
-        <p className="text-slate-500 text-sm">
-          Daftar mahasiswa terdaftar dan pengaturan kelas serta semester mereka.
-        </p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            Manajemen Mahasiswa
+          </h1>
+          <p className="text-slate-500 text-sm">
+            Daftar mahasiswa terdaftar dan pengaturan kelas serta semester
+            mereka.
+          </p>
+        </div>
+        <button
+          onClick={openAddModal}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus size={18} />
+          Tambah Mahasiswa
+        </button>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -141,7 +323,7 @@ const AdminStudents: React.FC = () => {
             />
             <input
               type="text"
-              placeholder="Cari mahasiswa berdasarkan nama atau email..."
+              placeholder="Cari mahasiswa berdasarkan nama, email, atau NIM..."
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -177,6 +359,9 @@ const AdminStudents: React.FC = () => {
                         <span className="text-xs text-slate-500">
                           {std.nim || "NIM tidak tersedia"}
                         </span>
+                        <span className="text-xs text-slate-400 block">
+                          {std.email}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -200,11 +385,6 @@ const AdminStudents: React.FC = () => {
                         ))}
                       </select>
                     </div>
-                    {std.class?.name && (
-                      <div className="mt-1 text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded inline-block">
-                        {std.class.name}
-                      </div>
-                    )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
@@ -228,34 +408,45 @@ const AdminStudents: React.FC = () => {
                         ))}
                       </select>
                     </div>
-                    {std.semester?.name && (
-                      <div className="mt-1 text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded inline-block">
-                        {std.semester.name}
-                      </div>
-                    )}
                   </td>
                   <td className="px-6 py-4">
-                    <button
-                      onClick={() => updateStudent(std.id)}
-                      disabled={updatingStudent === std.id}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm ${
-                        updatingStudent === std.id
-                          ? "bg-slate-200 text-slate-500"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
-                      }`}
-                    >
-                      {updatingStudent === std.id ? (
-                        <>
-                          <div className="w-4 h-4 border-t-2 border-r-2 border-white rounded-full animate-spin"></div>
-                          Menyimpan...
-                        </>
-                      ) : (
-                        <>
-                          <Save size={14} />
-                          Simpan
-                        </>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateStudent(std.id)}
+                        disabled={updatingStudent === std.id}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm ${
+                          updatingStudent === std.id
+                            ? "bg-slate-200 text-slate-500"
+                            : "bg-blue-600 text-white hover:bg-blue-700"
+                        }`}
+                      >
+                        {updatingStudent === std.id ? (
+                          <>
+                            <div className="w-4 h-4 border-t-2 border-r-2 border-white rounded-full animate-spin"></div>
+                            Menyimpan...
+                          </>
+                        ) : (
+                          <>
+                            <Save size={14} />
+                            Simpan
+                          </>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => openEditModal(std)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded text-sm bg-amber-600 text-white hover:bg-amber-700"
+                      >
+                        <Edit2 size={14} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => openDeleteModal(std)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded text-sm bg-red-600 text-white hover:bg-red-700"
+                      >
+                        <Trash2 size={14} />
+                        Hapus
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -320,6 +511,354 @@ const AdminStudents: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Student Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
+              <h2 className="text-xl font-bold text-slate-900">
+                Tambah Mahasiswa Baru
+              </h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddStudent} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="contoh@email.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Nama Lengkap <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.full_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, full_name: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Nama lengkap mahasiswa"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  NIM <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.nim}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nim: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Nomor Induk Mahasiswa"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Password <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Minimal 6 karakter"
+                  minLength={6}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Role
+                </label>
+                <select
+                  value={formData.role}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      role: e.target.value as "STUDENT" | "ADMIN",
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="STUDENT">Student</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Kelas
+                </label>
+                <select
+                  value={formData.class_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, class_id: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Pilih Kelas...</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Semester
+                </label>
+                <select
+                  value={formData.semester_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, semester_id: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Pilih Semester...</option>
+                  {semesters.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50"
+                  disabled={formLoading}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300"
+                  disabled={formLoading}
+                >
+                  {formLoading ? "Menyimpan..." : "Tambah Mahasiswa"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Student Modal */}
+      {showEditModal && selectedStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white">
+              <h2 className="text-xl font-bold text-slate-900">
+                Edit Data Mahasiswa
+              </h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditStudent} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  disabled
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg bg-slate-50 text-slate-500"
+                />
+                <p className="text-xs text-slate-400 mt-1">
+                  Email tidak dapat diubah
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Nama Lengkap <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.full_name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, full_name: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  NIM <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.nim}
+                  onChange={(e) =>
+                    setFormData({ ...formData, nim: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Role
+                </label>
+                <select
+                  value={formData.role}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      role: e.target.value as "STUDENT" | "ADMIN",
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="STUDENT">Student</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Kelas
+                </label>
+                <select
+                  value={formData.class_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, class_id: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Pilih Kelas...</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Semester
+                </label>
+                <select
+                  value={formData.semester_id}
+                  onChange={(e) =>
+                    setFormData({ ...formData, semester_id: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Pilih Semester...</option>
+                  {semesters.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50"
+                  disabled={formLoading}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:bg-slate-300"
+                  disabled={formLoading}
+                >
+                  {formLoading ? "Menyimpan..." : "Simpan Perubahan"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full">
+            <div className="p-6 border-b border-slate-200">
+              <h2 className="text-xl font-bold text-slate-900">
+                Konfirmasi Hapus
+              </h2>
+            </div>
+
+            <div className="p-6">
+              <p className="text-slate-600 mb-4">
+                Apakah Anda yakin ingin menghapus mahasiswa{" "}
+                <strong>{selectedStudent.full_name}</strong>?
+              </p>
+              <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg">
+                ⚠️ Tindakan ini tidak dapat dibatalkan. Semua data terkait
+                mahasiswa ini akan dihapus secara permanen.
+              </p>
+            </div>
+
+            <div className="p-6 border-t border-slate-200 flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 px-4 py-2 border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50"
+                disabled={formLoading}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleDeleteStudent}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-slate-300"
+                disabled={formLoading}
+              >
+                {formLoading ? "Menghapus..." : "Ya, Hapus"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
