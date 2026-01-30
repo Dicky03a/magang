@@ -42,7 +42,6 @@ const AdminSubmissions: React.FC = () => {
     dateTo: "",
   });
 
-  // Get unique courses and classes for filter dropdowns
   const [courses, setCourses] = useState<string[]>([]);
   const [classes, setClasses] = useState<string[]>([]);
 
@@ -51,7 +50,6 @@ const AdminSubmissions: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Extract unique courses and classes from submissions
     const uniqueCourses = [
       ...new Set(
         submissions
@@ -168,7 +166,6 @@ const AdminSubmissions: React.FC = () => {
 
   const filteredAndSortedSubmissions = submissions
     .filter((sub) => {
-      // Text search
       const matchesSearch =
         sub.student?.full_name
           .toLowerCase()
@@ -180,19 +177,13 @@ const AdminSubmissions: React.FC = () => {
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
 
-      // Course filter
       const matchesCourse =
         !filters.course || sub.assignment?.course?.name === filters.course;
-
-      // Class filter
       const matchesClass =
         !filters.class || (sub.student as any)?.class?.name === filters.class;
-
-      // Score filter
       const matchesScore =
         sub.score >= filters.minScore && sub.score <= filters.maxScore;
 
-      // Date filter
       const submittedDate = new Date(sub.submitted_at);
       const matchesDateFrom =
         !filters.dateFrom ||
@@ -250,79 +241,90 @@ const AdminSubmissions: React.FC = () => {
   const stats = calculateStats();
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 font-['Poppins']">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-            Laporan & Nilai
-          </h1>
-          <p className="text-slate-500 font-medium">
-            Pantau hasil pengerjaan tugas seluruh mahasiswa secara real-time.
+          <h1 className="text-3xl font-bold text-slate-800">Laporan & Nilai</h1>
+          <p className="text-slate-500 font-medium text-sm mt-1">
+            Pantau hasil pengerjaan tugas seluruh mahasiswa secara real-time
           </p>
         </div>
         <button
           onClick={handleExportCSV}
-          className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
+          className="flex items-center gap-2 bg-white border border-slate-200 px-5 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
         >
-          <Download size={18} /> Ekspor CSV
+          <Download size={18} strokeWidth={2} /> Ekspor CSV
         </button>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Total Pengumpulan
             </span>
-            <FileText size={20} className="text-blue-600" />
+            <div className="bg-teal-100 p-2 rounded-xl">
+              <FileText size={20} className="text-teal-600" strokeWidth={2} />
+            </div>
           </div>
-          <p className="text-3xl font-black text-slate-900">{stats.total}</p>
+          <p className="text-3xl font-bold text-slate-800">{stats.total}</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Rata-Rata
             </span>
-            <Award size={20} className="text-yellow-600" />
+            <div className="bg-amber-100 p-2 rounded-xl">
+              <Award size={20} className="text-amber-600" strokeWidth={2} />
+            </div>
           </div>
-          <p className="text-3xl font-black text-slate-900">{stats.avg}%</p>
+          <p className="text-3xl font-bold text-slate-800">{stats.avg}%</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Tertinggi
             </span>
-            <TrendingUp size={20} className="text-green-600" />
+            <div className="bg-emerald-100 p-2 rounded-xl">
+              <TrendingUp
+                size={20}
+                className="text-emerald-600"
+                strokeWidth={2}
+              />
+            </div>
           </div>
-          <p className="text-3xl font-black text-slate-900">{stats.highest}%</p>
+          <p className="text-3xl font-bold text-slate-800">{stats.highest}%</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Terendah
             </span>
-            <TrendingUp
-              size={20}
-              className="text-red-600 transform rotate-180"
-            />
+            <div className="bg-red-100 p-2 rounded-xl">
+              <TrendingUp
+                size={20}
+                className="text-red-600 transform rotate-180"
+                strokeWidth={2}
+              />
+            </div>
           </div>
-          <p className="text-3xl font-black text-slate-900">{stats.lowest}%</p>
+          <p className="text-3xl font-bold text-slate-800">{stats.lowest}%</p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {/* Search and Filter Bar */}
         <div className="p-6 border-b border-slate-100">
           <div className="flex flex-col md:flex-row items-center gap-4">
             <div className="relative flex-1 w-full">
               <Search
-                className="absolute left-4 top-3 text-slate-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                 size={20}
               />
               <input
@@ -330,21 +332,20 @@ const AdminSubmissions: React.FC = () => {
                 placeholder="Cari nama mahasiswa, tugas, atau mata kuliah..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium text-sm"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-500 transition-all font-medium text-sm"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`p-3 border rounded-2xl transition-all text-slate-500 ${
+              className={`p-3 border rounded-xl transition-all ${
                 showFilters
-                  ? "bg-blue-50 border-blue-500 text-blue-600"
-                  : "border-slate-200 hover:bg-slate-50"
+                  ? "bg-teal-50 border-teal-500 text-teal-600"
+                  : "border-slate-200 text-slate-500 hover:bg-slate-50"
               }`}
             >
               <Filter size={20} />
             </button>
 
-            {/* Sort Dropdown */}
             <div className="relative">
               <select
                 value={`${sortBy}-${sortOrder}`}
@@ -353,7 +354,7 @@ const AdminSubmissions: React.FC = () => {
                   setSortBy(newSortBy as "date" | "score" | "name");
                   setSortOrder(newSortOrder as "asc" | "desc");
                 }}
-                className="appearance-none px-4 py-3 pr-10 border border-slate-200 rounded-2xl bg-slate-50 font-medium text-sm cursor-pointer hover:bg-slate-100 transition-all"
+                className="appearance-none px-4 py-3 pr-10 border border-slate-200 rounded-xl bg-slate-50 font-medium text-sm cursor-pointer hover:bg-slate-100 transition-all"
               >
                 <option value="date-desc">Terbaru</option>
                 <option value="date-asc">Terlama</option>
@@ -363,7 +364,7 @@ const AdminSubmissions: React.FC = () => {
                 <option value="name-desc">Nama Z-A</option>
               </select>
               <ChevronDown
-                className="absolute right-3 top-3.5 pointer-events-none text-slate-400"
+                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400"
                 size={16}
               />
             </div>
@@ -371,10 +372,10 @@ const AdminSubmissions: React.FC = () => {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-4 p-4 bg-slate-50 rounded-2xl space-y-4 animate-in slide-in-from-top duration-300">
+            <div className="mt-6 p-5 bg-slate-50 rounded-2xl space-y-4 animate-in slide-in-from-top duration-300">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-2">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2">
                     Mata Kuliah
                   </label>
                   <select
@@ -382,7 +383,7 @@ const AdminSubmissions: React.FC = () => {
                     onChange={(e) =>
                       setFilters({ ...filters, course: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-sm font-medium"
                   >
                     <option value="">Semua Mata Kuliah</option>
                     {courses.map((course) => (
@@ -394,7 +395,7 @@ const AdminSubmissions: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-2">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2">
                     Kelas
                   </label>
                   <select
@@ -402,7 +403,7 @@ const AdminSubmissions: React.FC = () => {
                     onChange={(e) =>
                       setFilters({ ...filters, class: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-sm font-medium"
                   >
                     <option value="">Semua Kelas</option>
                     {classes.map((className) => (
@@ -414,7 +415,7 @@ const AdminSubmissions: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-2">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2">
                     Rentang Nilai
                   </label>
                   <div className="flex gap-2 items-center">
@@ -429,10 +430,10 @@ const AdminSubmissions: React.FC = () => {
                           minScore: parseInt(e.target.value) || 0,
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm"
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-sm font-medium"
                       placeholder="Min"
                     />
-                    <span className="text-slate-400">-</span>
+                    <span className="text-slate-400 font-semibold">-</span>
                     <input
                       type="number"
                       min="0"
@@ -444,7 +445,7 @@ const AdminSubmissions: React.FC = () => {
                           maxScore: parseInt(e.target.value) || 100,
                         })
                       }
-                      className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm"
+                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-sm font-medium"
                       placeholder="Max"
                     />
                   </div>
@@ -453,7 +454,7 @@ const AdminSubmissions: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-2">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2">
                     Tanggal Mulai
                   </label>
                   <input
@@ -462,12 +463,12 @@ const AdminSubmissions: React.FC = () => {
                     onChange={(e) =>
                       setFilters({ ...filters, dateFrom: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-sm font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-2">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2">
                     Tanggal Akhir
                   </label>
                   <input
@@ -476,7 +477,7 @@ const AdminSubmissions: React.FC = () => {
                     onChange={(e) =>
                       setFilters({ ...filters, dateTo: e.target.value })
                     }
-                    className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm"
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl bg-white text-sm font-medium"
                   />
                 </div>
               </div>
@@ -484,7 +485,7 @@ const AdminSubmissions: React.FC = () => {
               <div className="flex justify-end">
                 <button
                   onClick={resetFilters}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors"
                 >
                   <X size={16} /> Reset Filter
                 </button>
@@ -497,26 +498,26 @@ const AdminSubmissions: React.FC = () => {
         <div className="overflow-x-auto">
           {loading ? (
             <div className="p-20 text-center">
-              <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <div className="w-16 h-16 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mx-auto mb-4"></div>
               <p className="text-slate-600 font-medium">Memuat data...</p>
             </div>
           ) : (
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
-                  <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                     Mahasiswa
                   </th>
-                  <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                     Tugas / Mata Kuliah
                   </th>
-                  <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                     Waktu Kumpul
                   </th>
-                  <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">
                     Skor (%)
                   </th>
-                  <th className="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
+                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">
                     Nilai Huruf
                   </th>
                 </tr>
@@ -525,15 +526,15 @@ const AdminSubmissions: React.FC = () => {
                 {filteredAndSortedSubmissions.map((sub) => (
                   <tr
                     key={sub.id}
-                    className="hover:bg-blue-50/30 transition-colors"
+                    className="hover:bg-slate-50 transition-colors"
                   >
-                    <td className="px-8 py-5">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm">
+                        <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-sm">
                           {sub.student?.full_name.charAt(0)}
                         </div>
                         <div>
-                          <p className="font-bold text-slate-900 text-sm">
+                          <p className="font-semibold text-slate-800 text-sm">
                             {sub.student?.full_name}
                           </p>
                           <p className="text-xs text-slate-400">
@@ -542,15 +543,15 @@ const AdminSubmissions: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-5">
-                      <p className="font-bold text-slate-800 text-sm">
+                    <td className="px-6 py-5">
+                      <p className="font-semibold text-slate-800 text-sm">
                         {sub.assignment?.title}
                       </p>
-                      <p className="text-xs text-blue-600 font-semibold">
+                      <p className="text-xs text-teal-600 font-semibold">
                         {sub.assignment?.course?.name}
                       </p>
                     </td>
-                    <td className="px-8 py-5">
+                    <td className="px-6 py-5">
                       <div className="flex items-center gap-2 text-slate-500 text-sm">
                         <Clock size={14} />
                         {new Date(sub.submitted_at).toLocaleString("id-ID", {
@@ -559,22 +560,22 @@ const AdminSubmissions: React.FC = () => {
                         })}
                       </div>
                     </td>
-                    <td className="px-8 py-5 text-center">
+                    <td className="px-6 py-5 text-center">
                       <div
-                        className={`inline-block px-4 py-2 rounded-2xl font-black text-lg ${
+                        className={`inline-block px-4 py-2 rounded-xl font-bold text-base ${
                           sub.score >= 80
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-emerald-100 text-emerald-700"
                             : sub.score >= 60
-                              ? "bg-orange-100 text-orange-700"
+                              ? "bg-amber-100 text-amber-700"
                               : "bg-red-100 text-red-700"
                         }`}
                       >
                         {sub.score}
                       </div>
                     </td>
-                    <td className="px-8 py-5 text-center">
+                    <td className="px-6 py-5 text-center">
                       <div
-                        className={`inline-block px-4 py-2 rounded-2xl font-black text-lg ${getGradeColorClass(convertScoreToGrade(sub.score))}`}
+                        className={`inline-block px-4 py-2 rounded-xl font-bold text-base ${getGradeColorClass(convertScoreToGrade(sub.score))}`}
                       >
                         {convertScoreToGrade(sub.score)}
                       </div>
@@ -583,11 +584,13 @@ const AdminSubmissions: React.FC = () => {
                 ))}
                 {filteredAndSortedSubmissions.length === 0 && !loading && (
                   <tr>
-                    <td colSpan={5} className="px-8 py-20 text-center">
-                      <div className="flex flex-col items-center gap-2 text-slate-400">
-                        <TrendingUp size={48} className="opacity-20" />
-                        <p className="italic">
-                          Tidak ada pengumpulan yang ditemukan.
+                    <td colSpan={5} className="px-6 py-20 text-center">
+                      <div className="flex flex-col items-center gap-3 text-slate-400">
+                        <div className="bg-slate-100 p-4 rounded-2xl">
+                          <TrendingUp size={48} strokeWidth={1.5} />
+                        </div>
+                        <p className="italic font-medium">
+                          Tidak ada pengumpulan yang ditemukan
                         </p>
                         {(searchTerm ||
                           filters.course ||
@@ -596,7 +599,7 @@ const AdminSubmissions: React.FC = () => {
                           filters.dateTo) && (
                           <button
                             onClick={resetFilters}
-                            className="mt-2 text-blue-600 hover:text-blue-700 font-semibold text-sm"
+                            className="mt-2 text-teal-600 hover:text-teal-700 font-semibold text-sm"
                           >
                             Reset semua filter
                           </button>
