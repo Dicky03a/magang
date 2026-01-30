@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { Profile } from "../types";
@@ -28,6 +28,23 @@ const Layout: React.FC<LayoutProps> = ({ children, profile }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Auto-close sidebar on mobile when route changes
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
@@ -48,153 +65,172 @@ const Layout: React.FC<LayoutProps> = ({ children, profile }) => {
   const links = profile.role === "ADMIN" ? adminLinks : studentLinks;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex font-['Poppins']">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Mobile Header */}
-      <div className="md:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center space-x-3">
-          <div className="bg-teal-700 p-2 rounded-xl">
-            <GraduationCap size={20} className="text-white" strokeWidth={2.5} />
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-teal-600 to-teal-700 rounded-lg flex items-center justify-center shadow-md">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-lg font-bold bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent">
+              SIM TUGAS SI
+            </span>
           </div>
-          <span className="font-bold text-slate-800 text-lg">EduTask</span>
+
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-all"
+            aria-label="Toggle menu"
+          >
+            {isSidebarOpen ? (
+              <X className="w-6 h-6 text-slate-700" />
+            ) : (
+              <Menu className="w-6 h-6 text-slate-700" />
+            )}
+          </button>
         </div>
-        <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 hover:bg-slate-100 rounded-lg transition-all"
-        >
-          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
       </div>
 
       {/* Sidebar */}
       <aside
         className={`
-        fixed md:sticky top-0 left-0 h-screen
-        transform ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-        md:translate-x-0 transition-all duration-300 ease-in-out
-        ${isCollapsed ? "w-20" : "w-64"} 
-        bg-white border-r border-slate-200 z-40 flex flex-col
-      `}
+          fixed top-0 left-0 z-50 h-screen bg-white border-r border-slate-200 shadow-xl
+          transition-all duration-300 ease-in-out
+          ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+          ${isCollapsed ? "w-20" : "w-64"}
+        `}
       >
-        {/* Logo Section */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-3">
-              <div className="bg-teal-700 p-2 rounded-xl">
-                <GraduationCap
-                  size={24}
-                  className="text-white"
-                  strokeWidth={2.5}
-                />
+        <div className="flex flex-col h-full">
+          {/* Logo Section */}
+          <div className="flex items-center justify-between px-4 py-4 border-b border-slate-200">
+            {!isCollapsed && (
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 rounded-xl flex items-center justify-center shadow-lg">
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-teal-800 bg-clip-text text-transparent">
+                  SIM TUGAS SI
+                </span>
               </div>
-              <span className="font-bold text-slate-800 text-xl">EduTask</span>
-            </div>
-          )}
-          {isCollapsed && (
-            <div className="bg-teal-700 p-2 rounded-xl mx-auto">
-              <GraduationCap
-                size={24}
-                className="text-white"
-                strokeWidth={2.5}
-              />
-            </div>
-          )}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden md:block p-1.5 hover:bg-slate-100 rounded-lg transition-all ml-auto"
-          >
-            {isCollapsed ? (
-              <ChevronRight size={18} />
-            ) : (
-              <ChevronLeft size={18} />
             )}
-          </button>
-        </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {links.map((link) => {
-            const Icon = link.icon;
-            const isActive = location.pathname === link.path;
-            return (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsSidebarOpen(false)}
-                title={isCollapsed ? link.name : ""}
-                className={`
-                  group flex items-center ${isCollapsed ? "justify-center" : "justify-start"} 
-                  gap-3 px-4 py-3 rounded-xl transition-all duration-200
-                  ${
-                    isActive
-                      ? "bg-teal-700 text-white shadow-lg shadow-teal-200"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }
-                `}
-              >
-                <Icon size={20} strokeWidth={2} className="flex-shrink-0" />
-                {!isCollapsed && (
-                  <span className="font-medium text-[15px] whitespace-nowrap">
-                    {link.name}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+            {isCollapsed && (
+              <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 rounded-xl flex items-center justify-center shadow-lg mx-auto">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+            )}
 
-        {/* User Profile Section */}
-        <div className="p-4 border-t border-slate-100">
-          {!isCollapsed ? (
-            <>
-              <div className="bg-slate-50 rounded-2xl p-4 mb-3 flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-600 to-teal-700 text-white flex items-center justify-center font-bold text-lg shadow-md">
-                  {profile.full_name.charAt(0)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800 truncate">
-                    {profile.full_name}
-                  </p>
-                  <p className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">
-                    {profile.role}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all font-medium text-sm"
-              >
-                <LogOut size={16} strokeWidth={2} />
-                <span>Sign Out</span>
-              </button>
-            </>
-          ) : (
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-600 to-teal-700 text-white flex items-center justify-center font-bold text-lg shadow-md">
-                {profile.full_name.charAt(0)}
-              </div>
-              <button
-                onClick={handleLogout}
-                className="p-2.5 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
-                title="Sign Out"
-              >
-                <LogOut size={18} strokeWidth={2} />
-              </button>
+            <button
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="hidden md:block p-1.5 hover:bg-slate-100 rounded-lg transition-all ml-auto"
+              aria-label="Toggle sidebar"
+            >
+              {isCollapsed ? (
+                <ChevronRight className="w-5 h-5 text-slate-600" />
+              ) : (
+                <ChevronLeft className="w-5 h-5 text-slate-600" />
+              )}
+            </button>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto py-4 px-3">
+            <div className="space-y-1">
+              {links.map((link) => {
+                const Icon = link.icon;
+                const isActive = location.pathname === link.path;
+
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsSidebarOpen(false)}
+                    title={isCollapsed ? link.name : ""}
+                    className={`
+                      group flex items-center gap-3 px-3 py-3 rounded-xl
+                      transition-all duration-200
+                      ${isCollapsed ? "justify-center" : "justify-start"}
+                      ${
+                        isActive
+                          ? "bg-teal-700 text-white shadow-lg shadow-teal-200"
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      }
+                    `}
+                  >
+                    <Icon
+                      className={`${isCollapsed ? "w-6 h-6" : "w-5 h-5"} flex-shrink-0`}
+                    />
+                    {!isCollapsed && (
+                      <span className="font-medium text-sm">{link.name}</span>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
-          )}
+          </nav>
+
+          {/* User Profile Section */}
+          <div className="border-t border-slate-200 p-3">
+            {!isCollapsed ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 px-3 py-2">
+                  <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+                    {profile.full_name.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 truncate">
+                      {profile.full_name}
+                    </p>
+                    <p className="text-xs text-slate-500 truncate">
+                      {profile.role}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex justify-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-teal-600 to-teal-700 rounded-full flex items-center justify-center text-white font-semibold">
+                    {profile.full_name.charAt(0)}
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center p-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-x-hidden">
-        <div className="p-6 md:p-8 lg:p-10 max-w-[1600px] mx-auto">
-          {children}
-        </div>
+      <main
+        className={`
+          transition-all duration-300
+          pt-16 md:pt-0
+          ${isCollapsed ? "md:ml-20" : "md:ml-64"}
+        `}
+      >
+        <div className="p-4 sm:p-6 lg:p-8">{children}</div>
       </main>
 
       {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-30"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}

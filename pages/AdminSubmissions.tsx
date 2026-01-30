@@ -259,8 +259,8 @@ const AdminSubmissions: React.FC = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Total Pengumpulan
@@ -269,10 +269,10 @@ const AdminSubmissions: React.FC = () => {
               <FileText size={20} className="text-teal-600" strokeWidth={2} />
             </div>
           </div>
-          <p className="text-3xl font-bold text-slate-800">{stats.total}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-slate-800">{stats.total}</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Rata-Rata
@@ -281,10 +281,10 @@ const AdminSubmissions: React.FC = () => {
               <Award size={20} className="text-amber-600" strokeWidth={2} />
             </div>
           </div>
-          <p className="text-3xl font-bold text-slate-800">{stats.avg}%</p>
+          <p className="text-2xl sm:text-3xl font-bold text-slate-800">{stats.avg}%</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Tertinggi
@@ -297,10 +297,10 @@ const AdminSubmissions: React.FC = () => {
               />
             </div>
           </div>
-          <p className="text-3xl font-bold text-slate-800">{stats.highest}%</p>
+          <p className="text-2xl sm:text-3xl font-bold text-slate-800">{stats.highest}%</p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
               Terendah
@@ -313,7 +313,7 @@ const AdminSubmissions: React.FC = () => {
               />
             </div>
           </div>
-          <p className="text-3xl font-bold text-slate-800">{stats.lowest}%</p>
+          <p className="text-2xl sm:text-3xl font-bold text-slate-800">{stats.lowest}%</p>
         </div>
       </div>
 
@@ -505,19 +505,19 @@ const AdminSubmissions: React.FC = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-100">
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                  <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                     Mahasiswa
                   </th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                  <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                     Tugas / Mata Kuliah
                   </th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                  <th className="hidden md:table-cell px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                     Waktu Kumpul
                   </th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">
+                  <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">
                     Skor (%)
                   </th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">
+                  <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">
                     Nilai Huruf
                   </th>
                 </tr>
@@ -528,9 +528,9 @@ const AdminSubmissions: React.FC = () => {
                     key={sub.id}
                     className="hover:bg-slate-50 transition-colors"
                   >
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-3 sm:px-6 sm:py-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-sm">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold text-sm">
                           {sub.student?.full_name.charAt(0)}
                         </div>
                         <div>
@@ -543,7 +543,7 @@ const AdminSubmissions: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-3 sm:px-6 sm:py-5">
                       <p className="font-semibold text-slate-800 text-sm">
                         {sub.assignment?.title}
                       </p>
@@ -551,7 +551,7 @@ const AdminSubmissions: React.FC = () => {
                         {sub.assignment?.course?.name}
                       </p>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="hidden md:table-cell px-4 py-3 sm:px-6 sm:py-5">
                       <div className="flex items-center gap-2 text-slate-500 text-sm">
                         <Clock size={14} />
                         {new Date(sub.submitted_at).toLocaleString("id-ID", {
@@ -560,9 +560,9 @@ const AdminSubmissions: React.FC = () => {
                         })}
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-4 py-3 sm:px-6 sm:py-5 text-center">
                       <div
-                        className={`inline-block px-4 py-2 rounded-xl font-bold text-base ${
+                        className={`inline-block px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl font-bold text-sm sm:text-base ${
                           sub.score >= 80
                             ? "bg-emerald-100 text-emerald-700"
                             : sub.score >= 60
@@ -573,9 +573,9 @@ const AdminSubmissions: React.FC = () => {
                         {sub.score}
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-4 py-3 sm:px-6 sm:py-5 text-center">
                       <div
-                        className={`inline-block px-4 py-2 rounded-xl font-bold text-base ${getGradeColorClass(convertScoreToGrade(sub.score))}`}
+                        className={`inline-block px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl font-bold text-sm sm:text-base ${getGradeColorClass(convertScoreToGrade(sub.score))}`}
                       >
                         {convertScoreToGrade(sub.score)}
                       </div>
@@ -584,12 +584,12 @@ const AdminSubmissions: React.FC = () => {
                 ))}
                 {filteredAndSortedSubmissions.length === 0 && !loading && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-20 text-center">
+                    <td colSpan={5} className="px-4 py-16 sm:px-6 sm:py-20 text-center">
                       <div className="flex flex-col items-center gap-3 text-slate-400">
                         <div className="bg-slate-100 p-4 rounded-2xl">
                           <TrendingUp size={48} strokeWidth={1.5} />
                         </div>
-                        <p className="italic font-medium">
+                        <p className="italic font-medium text-sm sm:text-base">
                           Tidak ada pengumpulan yang ditemukan
                         </p>
                         {(searchTerm ||

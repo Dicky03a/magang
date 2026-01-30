@@ -330,16 +330,16 @@ const AdminStudents: React.FC = () => {
           <table className="w-full text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                   Mahasiswa
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                   Kelas
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                <th className="hidden md:table-cell px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                   Semester Aktif
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                   Aksi
                 </th>
               </tr>
@@ -350,10 +350,10 @@ const AdminStudents: React.FC = () => {
                   key={std.id}
                   className="hover:bg-slate-50 transition-colors"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold">
-                        <User size={18} strokeWidth={2} />
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center font-bold">
+                        <User size={16} sm:size={18} strokeWidth={2} />
                       </div>
                       <div>
                         <span className="font-semibold text-slate-800 text-sm block">
@@ -368,11 +368,11 @@ const AdminStudents: React.FC = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4">
                     <div className="flex items-center gap-2">
-                      <BookOpen className="text-slate-400" size={16} />
+                      <BookOpen className="text-slate-400 hidden sm:block" size={16} />
                       <select
-                        className="text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-teal-500 min-w-[120px] font-medium"
+                        className="text-sm bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 outline-none focus:ring-2 focus:ring-teal-500 min-w-[100px] sm:min-w-[120px] font-medium"
                         value={
                           studentUpdates[std.id]?.class_id || std.class_id || ""
                         }
@@ -380,7 +380,7 @@ const AdminStudents: React.FC = () => {
                           handleClassChange(std.id, e.target.value)
                         }
                       >
-                        <option value="">Pilih Kelas...</option>
+                        <option value="">Pilih...</option>
                         {classes.map((c) => (
                           <option key={c.id} value={c.id}>
                             {c.name}
@@ -389,7 +389,7 @@ const AdminStudents: React.FC = () => {
                       </select>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="hidden md:table-cell px-4 py-3 sm:px-6 sm:py-4">
                     <div className="flex items-center gap-2">
                       <Calendar className="text-slate-400" size={16} />
                       <select
@@ -403,7 +403,7 @@ const AdminStudents: React.FC = () => {
                           handleSemesterChange(std.id, e.target.value)
                         }
                       >
-                        <option value="">Pilih Semester...</option>
+                        <option value="">Pilih...</option>
                         {semesters.map((s) => (
                           <option key={s.id} value={s.id}>
                             {s.name}
@@ -412,12 +412,12 @@ const AdminStudents: React.FC = () => {
                       </select>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       <button
                         onClick={() => updateStudent(std.id)}
                         disabled={updatingStudent === std.id}
-                        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all ${
+                        className={`flex items-center gap-1 px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                           updatingStudent === std.id
                             ? "bg-slate-200 text-slate-500"
                             : "bg-teal-600 text-white hover:bg-teal-700 shadow-sm"
@@ -425,30 +425,47 @@ const AdminStudents: React.FC = () => {
                       >
                         {updatingStudent === std.id ? (
                           <>
-                            <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Menyimpan...
+                            <div className="w-3 h-3 sm:w-3.5 sm:h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <span className="hidden sm:inline">Menyim...</span>
+                            <span className="sm:hidden">Ms...</span>
                           </>
                         ) : (
                           <>
-                            <Save size={14} strokeWidth={2.5} />
-                            Simpan
+                            <Save size={12} sm:size={14} strokeWidth={2.5} />
+                            <span className="hidden sm:inline">Simpan</span>
+                            <span className="sm:hidden">S</span>
                           </>
                         )}
                       </button>
                       <button
                         onClick={() => openEditModal(std)}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold bg-amber-600 text-white hover:bg-amber-700 transition-all shadow-sm"
+                        className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold bg-amber-600 text-white hover:bg-amber-700 transition-all shadow-sm"
                       >
                         <Edit2 size={14} strokeWidth={2.5} />
                         Edit
                       </button>
                       <button
                         onClick={() => openDeleteModal(std)}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm"
+                        className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 transition-all shadow-sm"
                       >
                         <Trash2 size={14} strokeWidth={2.5} />
                         Hapus
                       </button>
+                      {/* Mobile action buttons */}
+                      <div className="sm:hidden flex gap-1">
+                        <button
+                          onClick={() => openEditModal(std)}
+                          className="p-1.5 rounded-lg bg-amber-600 text-white hover:bg-amber-700 transition-all"
+                        >
+                          <Edit2 size={12} strokeWidth={2.5} />
+                        </button>
+                        <button
+                          onClick={() => openDeleteModal(std)}
+                          className="p-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-all"
+                        >
+                          <Trash2 size={12} strokeWidth={2.5} />
+                        </button>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -457,7 +474,7 @@ const AdminStudents: React.FC = () => {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-6 py-12 text-center text-slate-400 italic"
+                    className="px-4 py-8 sm:px-6 sm:py-12 text-center text-slate-400 italic text-sm"
                   >
                     {searchTerm
                       ? "Tidak ada mahasiswa yang cocok dengan pencarian."
@@ -471,13 +488,14 @@ const AdminStudents: React.FC = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-teal-100 flex items-center justify-center">
               <GraduationCap
                 className="text-teal-600"
-                size={24}
+                size={20}
+                sm:size={24}
                 strokeWidth={2}
               />
             </div>
@@ -485,35 +503,36 @@ const AdminStudents: React.FC = () => {
               <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">
                 Total Mahasiswa
               </p>
-              <p className="text-2xl font-bold text-slate-800">
+              <p className="text-xl sm:text-2xl font-bold text-slate-800">
                 {students.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-cyan-100 flex items-center justify-center">
-              <BookOpen className="text-cyan-600" size={24} strokeWidth={2} />
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-cyan-100 flex items-center justify-center">
+              <BookOpen className="text-cyan-600" size={20} sm:size={24} strokeWidth={2} />
             </div>
             <div>
               <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">
                 Jumlah Kelas
               </p>
-              <p className="text-2xl font-bold text-slate-800">
+              <p className="text-xl sm:text-2xl font-bold text-slate-800">
                 {classes.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
               <Calendar
                 className="text-emerald-600"
-                size={24}
+                size={20}
+                sm:size={24}
                 strokeWidth={2}
               />
             </div>
@@ -521,7 +540,7 @@ const AdminStudents: React.FC = () => {
               <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">
                 Jumlah Semester
               </p>
-              <p className="text-2xl font-bold text-slate-800">
+              <p className="text-xl sm:text-2xl font-bold text-slate-800">
                 {semesters.length}
               </p>
             </div>

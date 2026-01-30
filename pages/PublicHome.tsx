@@ -18,7 +18,7 @@ const PublicHome: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen bg-white selection:bg-blue-100 selection:text-blue-900 font-sans">
       {/* Navbar */}
       <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-100 z-50">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">

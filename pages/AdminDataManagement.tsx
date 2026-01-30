@@ -128,9 +128,9 @@ const AdminDataManagement: React.FC = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* Form Add */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
+        <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
           <h3 className="text-lg font-bold text-slate-800 mb-5">
             Tambah Data Baru
           </h3>
@@ -177,19 +177,19 @@ const AdminDataManagement: React.FC = () => {
         </div>
 
         {/* List Data */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
           <table className="w-full text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                   Nama
                 </th>
                 {activeTab === "courses" && (
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                  <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                     Kode
                   </th>
                 )}
-                <th className="px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-right">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-right">
                   Aksi
                 </th>
               </tr>
@@ -205,15 +205,15 @@ const AdminDataManagement: React.FC = () => {
                   key={item.id}
                   className="hover:bg-slate-50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-semibold text-slate-800">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4 font-semibold text-slate-800">
                     {item.name}
                   </td>
                   {activeTab === "courses" && (
-                    <td className="px-6 py-4 text-slate-500 font-medium">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4 text-slate-500 font-medium">
                       {(item as Course).code}
                     </td>
                   )}
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4 text-right">
                     <button
                       onClick={() => handleDelete(item.id)}
                       className="p-2.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
@@ -227,11 +227,11 @@ const AdminDataManagement: React.FC = () => {
                 <tr>
                   <td
                     colSpan={activeTab === "courses" ? 3 : 2}
-                    className="px-6 py-12 text-center"
+                    className="px-4 py-8 sm:px-6 sm:py-12 text-center"
                   >
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-8 h-8 border-3 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
-                      <p className="text-slate-500 font-medium">
+                      <p className="text-slate-500 font-medium text-sm">
                         Memuat data...
                       </p>
                     </div>
@@ -248,7 +248,7 @@ const AdminDataManagement: React.FC = () => {
                   <tr>
                     <td
                       colSpan={activeTab === "courses" ? 3 : 2}
-                      className="px-6 py-12 text-center text-slate-400 italic"
+                      className="px-4 py-8 sm:px-6 sm:py-12 text-center text-slate-400 italic text-sm"
                     >
                       Belum ada data
                     </td>
